@@ -1,3 +1,4 @@
+var processing = require('Processing.js');
 var canvasWidth = 300;
 var canvasHeight = 300;
 var radius = 100;
@@ -33,8 +34,11 @@ var hitted = false;
 var lineColorIndex = randomExclude(0, colorSize -1, 1);
 
 
+var Circle = function() {
 
-draw = function() {
+}
+
+Circle.prototype.draw = function() {
     rect(0, 0, canvasWidth, canvasHeight);
     println("gameOver : " + gameOver);
     if(gameOver) {
