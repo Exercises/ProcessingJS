@@ -3,12 +3,18 @@
 // http://natureofcode.com
 
 // Example 1-1: Bouncing Ball, no vectors
+var canvasWidth = 500;
+var canvasHeight = 500;
+function setup() {
+  createCanvas(canvasWidth, canvasHeight);
+};
+
+
 var x = 100;
 var y = 100;
 var xspeed = 2.5;
 var yspeed = 2;
-var canvasWidth = 300;
-var canvasHeight = 300;
+
 var radius = 100;
 var angle = 0;
 var clock = true;
@@ -41,15 +47,14 @@ var randomExclude = function(low, high, exclude) {
 var hitted = false;
 var lineColorIndex = randomExclude(0, colorSize -1, 1);
 
-function setup() {
-  createCanvas(canvasWidth, canvasHeight);
-};
 
-function draw() {
+
+function drawBackground() {
+  background(52);
   rect(0, 0, canvasWidth, canvasHeight);
-  //background(51);
+}
 
-  // Add the current speed to the position.
+function drawBall() {
   x = x + xspeed;
   y = y + yspeed;
 
@@ -59,47 +64,77 @@ function draw() {
   if ((y > height) || (y < 0)) {
     yspeed = yspeed * -1;
   }
-
-  // Display circle at x position
   stroke(0);
   strokeWeight(2);
   fill(255, 0, 0);
-  ellipse(x, y, 48, 4);
-  //real circle
-  noStroke();
-  fill(36, 1, 1);
+  ellipse(x, y, 48, 48);
+}
 
+function rectLeftTop() {
+  noStroke();
+  fill(0, 255, 1);
+  rect(0, 0, 50, 30);
+}
+
+function drawLine() {
+  //line
+  stroke(0, 173, 0);
+  strokeWeight(4);
+  line(0, 0, 100, 310);
+}
+
+function drawArc() {
+  strokeWeight(2);
+  arc(100, 100, 200, 200, 0, 80);
+}
+
+function draw() {
+
+  //background(51);
+  drawBackground();
+
+  // Add the current speed to the position.
+
+  // Display circle at x position
+  drawBall();
+  rectLeftTop();
+
+  drawLine();
+
+
+
+  drawArc();
   var centerX = canvasWidth / 2;
   var centerY = canvasHeight / 2;
-
-  //ellipse(centerX, centerY, radius * 2, radius * 2);
   var range = 360 / circleColors.length;
-  //if(DEBUG) {
-  //println(circleColors.length + " range " + range);
-  //}
-  var angleBegin = 0;
-  strokeWeight(2);
-  for(var i = 0; i < circleColors.length; i++) {
-      stroke(circleColors[i]);
-      arc(centerX, centerY, radius * 2, radius * 2, angleBegin, angleBegin + range);
-      angleBegin = angleBegin + range;
-  }
-  angle += (clock ?  1 : -1) * 3;
-  if(angle > 360) {
-      angle -= 360;
-  }
-  if(angle < -360) {
-      angle += 360;
-  }
+  console.log("length: " + circleColors.length);
+  console.log("range: " + range);
+
+  // var angleBegin = 0;
+  // strokeWeight(2);
+  // arc(100, 100, 200, 200, 0, 80);
+
+  // for(var i = 0; i < circleColors.length; i++) {
+  //     stroke(circleColors[i]);
+  //     arc(centerX, centerY, radius * 2, radius * 2, angleBegin, angleBegin + range);
+  //     angleBegin = angleBegin + range;
+  // }
+  // angle += (clock ?  1 : -1) * 3;
+  // if(angle > 360) {
+  //     angle -= 360;
+  // }
+  // if(angle < -360) {
+  //     angle += 360;
+  // }
   
-  var colorIndex = floor((angle/range)) % circleColors.length;
-  if(DEBUG) {
-      println("range : " + range + " angle: " + angle + "colorIndex: " + colorIndex);
-  }
-  var currentColor = circleColors[colorIndex];
-  stroke(circleColors[lineColorIndex]);
-  line(centerX, centerY, centerX + radius * cos(angle), centerY + radius * sin(angle));
-  var hit = colorIndex === lineColorIndex;
+  // var colorIndex = floor((angle/range)) % circleColors.length;
+  // if(DEBUG) {
+  //     println("range : " + range + " angle: " + angle + "colorIndex: " + colorIndex);
+  // }
+  // var currentColor = circleColors[colorIndex];
+  // stroke(circleColors[lineColorIndex]);
+  // line(centerX, centerY, centerX + radius * cos(angle), centerY + radius * sin(angle));
+  // var hit = colorIndex === lineColorIndex;
 
 
 };
