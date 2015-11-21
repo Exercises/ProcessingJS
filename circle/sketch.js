@@ -3,13 +3,9 @@
 // http://natureofcode.com
 
 // Example 1-1: Bouncing Ball, no vectors
+
 var canvasWidth = 500;
 var canvasHeight = 500;
-function setup() {
-  createCanvas(canvasWidth, canvasHeight);
-};
-
-
 var x = 100;
 var y = 100;
 var xspeed = 2.5;
@@ -20,15 +16,28 @@ var angle = 0;
 var clock = true;
 var DEBUG = false;
 var gameOver = false;
-var circleColors = [
-    color(230, 143, 143),
-    color(125, 240, 125),
-    color(0, 0, 240),
-    color(250, 0, 250),
-    color(255, 222, 8)];
+var shared = {};
+function setup() {
+  createCanvas(canvasWidth, canvasHeight);
+  shared.circleColors = [
+      color(230, 143, 143),
+      color(125, 240, 125),
+      color(0, 0, 240),
+      color(250, 0, 250),
+      color(255, 222, 8)];
 
-var colorSize = circleColors.length;
+  shared.colorSize = shared.circleColors.length;
+  shared.hitted = false;
+  shared.lineColorIndex = randomExclude(0, shared.colorSize -1, 1);
 
+
+  shared.buttonRestart = new Button({
+      label: "You failed\nClick to Restart!"
+  });
+  shared.buttonRestart.centerSize(canvasWidth/2, canvasHeight/2, 200, 100);
+};
+var crossed = false;
+var lastHit = false;
 var randomInt = function(low, high) {
     var result =  floor(random(low, high + 1));
     if(result === high+1) {
@@ -44,13 +53,11 @@ var randomExclude = function(low, high, exclude) {
     }
     return result;
 };
-var hitted = false;
-var lineColorIndex = randomExclude(0, colorSize -1, 1);
-
 
 
 function drawBackground() {
-  background(52);
+  //fill(100，100，100);
+  fill(100, 100, 100);
   rect(0, 0, canvasWidth, canvasHeight);
 }
 
@@ -88,54 +95,74 @@ function drawArc() {
   arc(100, 100, 200, 200, 0, 80);
 }
 
-function draw() {
+function rad(angle) {
+   return angle / 180 * Math.PI;
+}
 
+function keyPressed() {
+    if (gameOver) {
+      gameOver = false;
+      lastHit =  false;
+      crossed =  false;
+      return;
+    }
+    if (!crossed) {
+      gameOver = true;
+      return;
+    }
+    clock = !clock;
+    crossed = false;
+    shared.lineColorIndex = randomExclude(0, shared.colorSize -1, shared.lineColorIndex);
+};
+
+function draw() {
   //background(51);
   drawBackground();
-
-  // Add the current speed to the position.
-
-  // Display circle at x position
-  drawBall();
-  rectLeftTop();
-
-  drawLine();
-
-
-
-  drawArc();
+  noFill();
   var centerX = canvasWidth / 2;
   var centerY = canvasHeight / 2;
-  var range = 360 / circleColors.length;
-  console.log("length: " + circleColors.length);
-  console.log("range: " + range);
+  var circleColors = shared.circleColors;
 
-  // var angleBegin = 0;
-  // strokeWeight(2);
-  // arc(100, 100, 200, 200, 0, 80);
-
-  // for(var i = 0; i < circleColors.length; i++) {
-  //     stroke(circleColors[i]);
-  //     arc(centerX, centerY, radius * 2, radius * 2, angleBegin, angleBegin + range);
-  //     angleBegin = angleBegin + range;
-  // }
-  // angle += (clock ?  1 : -1) * 3;
-  // if(angle > 360) {
-  //     angle -= 360;
-  // }
-  // if(angle < -360) {
-  //     angle += 360;
-  // }
+  var range = 360 / shared.circleColors.length;
+  if(DEBUG) {
+    console.log("length: " + shared.circleColors.length);
+    console.log("range: " + range);
+  }
+  var angleBegin = 0;
+  strokeWeight(2);
   
-  // var colorIndex = floor((angle/range)) % circleColors.length;
-  // if(DEBUG) {
-  //     println("range : " + range + " angle: " + angle + "colorIndex: " + colorIndex);
-  // }
-  // var currentColor = circleColors[colorIndex];
-  // stroke(circleColors[lineColorIndex]);
-  // line(centerX, centerY, centerX + radius * cos(angle), centerY + radius * sin(angle));
-  // var hit = colorIndex === lineColorIndex;
 
-
+  for(var i = 0; i < circleColors.length; i++) {
+      stroke(circleColors[i]);
+      arc(centerX, centerY, radius * 2, radius * 2, rad(angleBegin), rad(angleBegin + range));
+      angleBegin = angleBegin + range;
+  }
+  if(!gameOver) {
+    angle += (clock ?  1 : -1) * 3;
+    if(angle > 360) {
+        angle -= 360;
+    }
+    if(angle < -360) {
+        angle += 360;
+    }
+  }
+  var colorIndex = floor((angle/range)) % circleColors.length;
+  if(DEBUG) {
+      println("range : " + range + " angle: " + angle + "colorIndex: " + colorIndex);
+  }
+  var currentColor = circleColors[colorIndex];
+  stroke(circleColors[shared.lineColorIndex]);
+  line(centerX, centerY, centerX + radius * cos(rad(angle)), centerY + radius * sin(rad(angle)));
+  var hit = (colorIndex == shared.lineColorIndex);
+  console.log('gameOver : ' + gameOver);
+  if (gameOver) {
+    shared.buttonRestart.draw();
+  }
+  if (hit && !crossed) {
+    crossed = true;
+  }else if (crossed && !hit) {
+    gameOver = true;
+  }
+  lastHit = hit;
 };
 
